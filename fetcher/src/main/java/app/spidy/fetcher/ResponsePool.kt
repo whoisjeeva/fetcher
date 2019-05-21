@@ -7,6 +7,7 @@ class ResponsePool {
     var __ifSucceed: ((Response) -> Unit)? = null
     var __ifException: ((String?) -> Unit)? = null
     var __ifStream: ((ByteArray?) -> Unit)? = null
+    var __ifFailedOrException: (() -> Unit)? = null
 
     fun ifFailed(callback: (Response) -> Unit): ResponsePool {
         __ifFailed = callback
@@ -23,6 +24,11 @@ class ResponsePool {
 
     fun ifStream(callback: (ByteArray?) -> Unit): ResponsePool {
         __ifStream = callback
+        return this
+    }
+
+    fun ifFailedOrException(callback: () -> Unit): ResponsePool {
+        __ifFailedOrException = callback
         return this
     }
 }

@@ -16,19 +16,12 @@ class MainActivity : AppCompatActivity() {
 
         val argument = Argument()
         argument.params["name"] = "Jeeva"
-        argument.isStream = true
-        fetcher.post("http://httpbin.org/post", argument)
-            .ifFailed {
-                Log.d("test", "FAILED: $it")
-            }
-            .ifStream {
-                Log.d("test", it.toString())
+        fetcher.put("http://httpbin.org/put", argument)
+            .ifFailedOrException {
+                Log.d("test", "FAILED")
             }
             .ifSucceed {
-                Log.d("test", "SUCCEED: $it")
-            }
-            .ifException {
-                Log.d("test", "EXCEPTION: $it")
+                Log.d("test", "SUCCEED: ${it.text}")
             }
     }
 }

@@ -1,7 +1,6 @@
 [![](https://jitpack.io/v/anyms/fetcher.svg)](https://jitpack.io/#anyms/fetcher)
 [![Build Status](https://travis-ci.org/anyms/fetcher.svg?branch=master)](https://travis-ci.org/anyms/fetcher)
 [![License](https://img.shields.io/github/license/anyms/fetcher.svg)](https://github.com/anyms/fetcher/blob/master/LICENSE)
-[![codecov.io](https://codecov.io/github/anyms/fetcher/coverage.svg?branch=master)](https://codecov.io/github/anyms/fetcher)
 
 # Fetcher - A Human Friendly HTTP Library for Android
 

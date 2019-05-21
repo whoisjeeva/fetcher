@@ -23,8 +23,6 @@ install:
 script:
 - chmod +x ./gradlew
 - ./gradlew clean build
-after_success:
-- bash <(curl -s https://codecov.io/bash)
 
 addons:
   coverity_scan:
