@@ -4,7 +4,7 @@
 
 # Fetcher - A Human Friendly HTTP Library for Android
 
-Fetcher for human by human.
+Fetcher is for human by human.
 
 ![image](https://i.ibb.co/tpB7DqP/black-german-shepherd-d-4.jpg)
 
