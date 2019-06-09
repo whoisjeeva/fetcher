@@ -53,6 +53,10 @@ class Fetcher {
     }
 
     private fun __post_request(url: String, argument: Argument): Request {
+        if (argument.params.isEmpty()) {
+            argument.params["__fetcher"] = BuildConfig.VERSION_NAME
+        }
+        
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
         val request = Request.Builder()
@@ -101,6 +105,10 @@ class Fetcher {
     }
 
     private fun __put_request(url: String, argument: Argument): Request {
+        if (argument.params.isEmpty()) {
+            argument.params["__fetcher"] = BuildConfig.VERSION_NAME
+        }
+
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
         val request = Request.Builder()
