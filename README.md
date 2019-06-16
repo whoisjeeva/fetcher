@@ -10,6 +10,9 @@ Android apps created using Fetcher.
 [<img src="https://i.ibb.co/y88vTtp/web-hi-res-512.png" alt="Get it on Google Play" height="100">](https://play.google.com/store/apps/details?id=app.spidy.fetcher)
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=app.spidy.fetcher)
 
+[<img src="https://i.ibb.co/gSj0Ws0/web-hi-res-512.png" alt="Get it on Google Play" height="100">](https://play.google.com/store/apps/details?id=app.spidy.oli)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=app.spidy.oli)
+
 > Fetcher is for human by human.
 
 ![image](https://i.ibb.co/tpB7DqP/black-german-shepherd-d-4.jpg)
