@@ -13,9 +13,8 @@ class ResponsePool {
         __ifFailed = callback
         return this
     }
-    fun ifSucceed(callback: (Response) -> Unit): ResponsePool {
+    fun ifSucceed(callback: (Response) -> Unit) {
         __ifSucceed = callback
-        return this
     }
     fun ifException(callback: (String?) -> Unit): ResponsePool {
         __ifException = callback

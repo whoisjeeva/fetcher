@@ -1,6 +1,5 @@
 package app.spidy.fetcher
 
-import app.spidy.fetcher.models.Argument
 import app.spidy.fetcher.models.Response
 import app.spidy.fetcher.utils.onUiThread
 import okhttp3.OkHttpClient
@@ -11,10 +10,9 @@ import java.io.InputStream
 import java.lang.Exception
 import kotlin.concurrent.thread
 
-class Fetcher(private val isStatic: Boolean = false) {
+class Fetcher {
 
     /**
-     * TODO: add params and data separately
      * TODO: create a separate method for file upload
      */
 
@@ -28,7 +26,7 @@ class Fetcher(private val isStatic: Boolean = false) {
         val request = __get_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, params, headers, isStream)
+        execute(request, responsePool, isStream)
 
         return responsePool
     }
@@ -53,7 +51,7 @@ class Fetcher(private val isStatic: Boolean = false) {
         val request = __post_request(url, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, params, headers, isStream)
+        execute(request, responsePool, isStream)
 
         return responsePool
     }
@@ -86,7 +84,7 @@ class Fetcher(private val isStatic: Boolean = false) {
         val request = __head_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, params, headers, isStream)
+        execute(request, responsePool, isStream)
 
         return responsePool
     }
@@ -111,7 +109,7 @@ class Fetcher(private val isStatic: Boolean = false) {
         val request = __put_request(url, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, params, headers, isStream)
+        execute(request, responsePool, isStream)
 
         return responsePool
     }
@@ -138,8 +136,6 @@ class Fetcher(private val isStatic: Boolean = false) {
     private fun execute(
         request: Request,
         responsePool: ResponsePool,
-        params: HashMap<String, Any?>,
-        headers: HashMap<String, Any?>,
         isStream: Boolean) {
         thread {
             while(responsePool.__ifSucceed == null) {
