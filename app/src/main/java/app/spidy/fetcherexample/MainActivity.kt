@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import app.spidy.fetcher.Fetcher
 import app.spidy.fetcher.models.Argument
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,16 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val fetcher = Fetcher()
+        val fetcher = Fetcher().Classic()
 
-        val argument = Argument()
-        argument.params["name"] = "Jeeva"
-        fetcher.put("http://httpbin.org/put", argument)
-            .ifFailedOrException {
-                Log.d("test", "FAILED")
-            }
-            .ifSucceed {
-                Log.d("test", "SUCCEED: ${it.text}")
-            }
+        thread {
+            val response = fetcher.get("http://httpbin.org/get", headers = hashMapOf(
+                "User-Agent" to "hello"
+            ))
+            Log.d("hello", response.text.toString())
+        }
     }
 }
