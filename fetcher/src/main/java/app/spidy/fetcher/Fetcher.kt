@@ -11,7 +11,6 @@ import java.lang.Exception
 import kotlin.concurrent.thread
 
 class Fetcher {
-
     /**
      * TODO: create a separate method for file upload
      */
@@ -138,8 +137,11 @@ class Fetcher {
         responsePool: ResponsePool,
         isStream: Boolean) {
         thread {
-            while(responsePool.__ifSucceed == null) {
+            var waitingTime = 0
+            while(responsePool.listener.ifSucceed == null) {
                 Thread.sleep(100)
+                waitingTime += 100
+                if (waitingTime > 2000) break
             }
 
             try {
@@ -162,10 +164,10 @@ class Fetcher {
                         while (true) {
                             val bytes = inputStream?.read(buffer)
                             if (bytes == -1 || bytes == null) {
-                                onUiThread { responsePool.__ifStream?.invoke(null) }
+                                onUiThread { responsePool.listener.ifStream?.invoke(null) }
                                 break
                             }
-                            onUiThread { responsePool.__ifStream?.invoke(buffer) }
+                            onUiThread { responsePool.listener.ifStream?.invoke(buffer) }
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
@@ -173,17 +175,17 @@ class Fetcher {
                             response.text = String(it)
                         }
                     }
-                    onUiThread { responsePool.__ifSucceed?.invoke(response) }
+                    onUiThread { responsePool.listener.ifSucceed?.invoke(response) }
                 } else {
                     onUiThread {
-                        responsePool.__ifFailed?.invoke(response)
-                        responsePool.__ifFailedOrException?.invoke()
+                        responsePool.listener.ifFailed?.invoke(response)
+                        responsePool.listener.ifFailedOrException?.invoke()
                     }
                 }
             } catch (e: Exception) {
                 onUiThread {
-                    responsePool.__ifException?.invoke(e.message)
-                    responsePool.__ifFailedOrException?.invoke()
+                    responsePool.listener.ifException?.invoke(e.message)
+                    responsePool.listener.ifFailedOrException?.invoke()
                 }
             }
         }

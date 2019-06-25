@@ -1,33 +1,30 @@
 package app.spidy.fetcher
 
+import app.spidy.fetcher.models.Listener
 import app.spidy.fetcher.models.Response
 
 class ResponsePool {
-    var __ifFailed: ((Response) -> Unit)? = null
-    var __ifSucceed: ((Response) -> Unit)? = null
-    var __ifException: ((String?) -> Unit)? = null
-    var __ifStream: ((ByteArray?) -> Unit)? = null
-    var __ifFailedOrException: (() -> Unit)? = null
+    val listener = Listener()
 
     fun ifFailed(callback: (Response) -> Unit): ResponsePool {
-        __ifFailed = callback
+        listener.ifFailed = callback
         return this
     }
     fun ifSucceed(callback: (Response) -> Unit) {
-        __ifSucceed = callback
+        listener.ifSucceed = callback
     }
     fun ifException(callback: (String?) -> Unit): ResponsePool {
-        __ifException = callback
+        listener.ifException = callback
         return this
     }
 
     fun ifStream(callback: (ByteArray?) -> Unit): ResponsePool {
-        __ifStream = callback
+        listener.ifStream = callback
         return this
     }
 
     fun ifFailedOrException(callback: () -> Unit): ResponsePool {
-        __ifFailedOrException = callback
+        listener.ifFailedOrException = callback
         return this
     }
 }
