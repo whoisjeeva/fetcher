@@ -57,10 +57,11 @@ fetcher.post("http://httpbin.org/post")
     .ifFailed { response -> }
 
 // sending parameters with your request
-val argument = Argument()
-argument.params["name"] = "Fetcher"
-argument.params["age"] = 1
-fetcher.get("http://httpbin.org/get", argument)
+val params = hashMapOf(
+    "name" to "Fetcher",
+    "age" to 1
+)
+fetcher.get("http://httpbin.org/get", params = params)
     .ifSucceed { response -> }
     .ifFailed { response -> }
 ```
@@ -68,9 +69,7 @@ fetcher.get("http://httpbin.org/get", argument)
 Download binary files
 
 ```kotlin
-val argument = Argument()
-argument.isStream = true
-fetcher.get("http://httpbin.org/get", argument)
+fetcher.get("http://httpbin.org/get", isStream = true)
     .ifSucceed { response -> }
     .ifFailed { response -> }
     .ifStream { bytes ->
@@ -83,4 +82,33 @@ fetcher.get("http://httpbin.org/get", argument)
         }
     }
 ```
+
+
+### Classic requests
+
+Classic requests doesn't have any callbacks, which means it returns the response, you have to run classic methods in a thread.
+
+To use classic methods, you need to create a new instance from Fetcher
+
+```kotlin
+val fetcher = Fetcher().Classic()
+```
+
+Use case:
+
+```kotlin
+// simple GET request
+val response = fetcher.get("http://httpbin.org/get")
+
+// simple POST request
+val response = fetcher.post("http://httpbin.org/post")
+
+// sending parameters with your request
+val params = hashMapOf(
+    "name" to "Fetcher",
+    "age" to 1
+)
+val response = fetcher.get("http://httpbin.org/get", params = params)
+```
+
 
