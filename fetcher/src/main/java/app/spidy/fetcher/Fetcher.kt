@@ -2,6 +2,7 @@ package app.spidy.fetcher
 
 import app.spidy.fetcher.models.Response
 import app.spidy.fetcher.utils.onUiThread
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.HttpUrl
@@ -24,8 +25,7 @@ class Fetcher {
         val urlBuilder = HttpUrl.parse(url)!!.newBuilder()
         val request = __get_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
-
-        execute(request, responsePool, isStream)
+        responsePool.caller = Caller(execute(request, responsePool, isStream))
 
         return responsePool
     }
@@ -49,8 +49,7 @@ class Fetcher {
              isStream: Boolean = false): ResponsePool {
         val request = __post_request(url, params, headers)
         val responsePool = ResponsePool()
-
-        execute(request, responsePool, isStream)
+        responsePool.caller = Caller(execute(request, responsePool, isStream))
 
         return responsePool
     }
@@ -83,7 +82,7 @@ class Fetcher {
         val request = __head_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, isStream)
+        responsePool.caller = Caller(execute(request, responsePool, isStream))
 
         return responsePool
     }
@@ -108,7 +107,7 @@ class Fetcher {
         val request = __put_request(url, params, headers)
         val responsePool = ResponsePool()
 
-        execute(request, responsePool, isStream)
+        responsePool.caller = Caller(execute(request, responsePool, isStream))
 
         return responsePool
     }
@@ -135,7 +134,8 @@ class Fetcher {
     private fun execute(
         request: Request,
         responsePool: ResponsePool,
-        isStream: Boolean) {
+        isStream: Boolean): Call {
+        val call = httpClient.newCall(request)
         thread {
             var waitingTime = 0
             while(responsePool.listener.ifSucceed == null) {
@@ -145,7 +145,7 @@ class Fetcher {
             }
 
             try {
-                val serverResponse = httpClient.newCall(request).execute()
+                val serverResponse = call.execute()
                 val inputStream: InputStream? = if (isStream) serverResponse.body()?.byteStream() else null
                 val response = Response(
                     serverResponse.isRedirect,
@@ -189,6 +189,8 @@ class Fetcher {
                 }
             }
         }
+
+        return call
     }
 
 

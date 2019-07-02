@@ -5,13 +5,15 @@ import app.spidy.fetcher.models.Response
 
 class ResponsePool {
     val listener = Listener()
+    var caller: Caller? = null
 
     fun ifFailed(callback: (Response) -> Unit): ResponsePool {
         listener.ifFailed = callback
         return this
     }
-    fun ifSucceed(callback: (Response) -> Unit) {
+    fun ifSucceed(callback: (Response) -> Unit): Caller {
         listener.ifSucceed = callback
+        return caller!!
     }
     fun ifException(callback: (String?) -> Unit): ResponsePool {
         listener.ifException = callback
