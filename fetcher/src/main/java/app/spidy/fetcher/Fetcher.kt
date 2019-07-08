@@ -9,6 +9,7 @@ import okhttp3.HttpUrl
 import okhttp3.MultipartBody
 import java.io.InputStream
 import java.lang.Exception
+import java.net.URLDecoder
 import kotlin.concurrent.thread
 
 class Fetcher {
@@ -17,6 +18,10 @@ class Fetcher {
      */
 
     private val httpClient = OkHttpClient()
+
+    fun urlDecode(url: String): String {
+        return URLDecoder.decode(url, "UTF-8")
+    }
 
     fun get(url: String,
             params: HashMap<String, Any?> = hashMapOf(),
