@@ -10,6 +10,7 @@ import okhttp3.MultipartBody
 import java.io.InputStream
 import java.lang.Exception
 import java.net.URLDecoder
+import java.net.URLEncoder
 import kotlin.concurrent.thread
 
 class Fetcher {
@@ -21,6 +22,10 @@ class Fetcher {
 
     fun urlDecode(url: String): String {
         return URLDecoder.decode(url, "UTF-8")
+    }
+
+    fun urlEncode(url: String): String {
+        return URLEncoder.encode(url, "UTF-8")
     }
 
     fun get(url: String,
