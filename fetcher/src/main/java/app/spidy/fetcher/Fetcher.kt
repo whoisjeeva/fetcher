@@ -171,13 +171,18 @@ class Fetcher {
                 if (serverResponse.isSuccessful) {
                     val buffer = ByteArray(byteSize)
                     if (isStream) {
-                        while (true) {
-                            val bytes = inputStream?.read(buffer)
-                            if (bytes == -1 || bytes == null) {
-                                onUiThread { responsePool.listener.ifStream?.invoke(null, null) }
-                                break
+                        try {
+                            while (true) {
+                                val bytes = inputStream?.read(buffer)
+                                if (bytes == -1 || bytes == null) {
+                                    onUiThread { responsePool.listener.ifStream?.invoke(null, null) }
+                                    break
+                                }
+                                onUiThread { responsePool.listener.ifStream?.invoke(buffer, bytes) }
                             }
-                            onUiThread { responsePool.listener.ifStream?.invoke(buffer, bytes) }
+                        } catch (e: Exception) {
+                            inputStream?.close()
+                            throw Exception("Fetcher: Something went wrong, while streaming")
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
