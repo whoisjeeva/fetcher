@@ -182,7 +182,8 @@ class Fetcher {
                             }
                         } catch (e: Exception) {
                             inputStream?.close()
-                            throw Exception("Fetcher: Something went wrong, while streaming")
+                            responsePool.listener.ifException?.invoke(null)
+                            responsePool.listener.ifFailedOrException?.invoke()
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
