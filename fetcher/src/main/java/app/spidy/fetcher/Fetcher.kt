@@ -31,11 +31,11 @@ class Fetcher {
     fun get(url: String,
             params: HashMap<String, Any?> = hashMapOf(),
             headers: HashMap<String, Any?> = hashMapOf("User-Agent" to "Fetcher/" + BuildConfig.VERSION_NAME),
-            isStream: Boolean = false): ResponsePool {
+            isStream: Boolean = false, byteSize: Int = 4096): ResponsePool {
         val urlBuilder = HttpUrl.parse(url)!!.newBuilder()
         val request = __get_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
-        responsePool.caller = Caller(execute(request, responsePool, isStream))
+        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize))
 
         return responsePool
     }
@@ -56,10 +56,10 @@ class Fetcher {
     fun post(url: String,
              params: HashMap<String, Any?> = hashMapOf(),
              headers: HashMap<String, Any?> = hashMapOf("User-Agent" to "Fetcher/" + BuildConfig.VERSION_NAME),
-             isStream: Boolean = false): ResponsePool {
+             isStream: Boolean = false, byteSize: Int = 4096): ResponsePool {
         val request = __post_request(url, params, headers)
         val responsePool = ResponsePool()
-        responsePool.caller = Caller(execute(request, responsePool, isStream))
+        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize))
 
         return responsePool
     }
@@ -87,12 +87,12 @@ class Fetcher {
     fun head(url: String,
              params: HashMap<String, Any?> = hashMapOf(),
              headers: HashMap<String, Any?> = hashMapOf("User-Agent" to "Fetcher/" + BuildConfig.VERSION_NAME),
-             isStream: Boolean = false): ResponsePool {
+             isStream: Boolean = false, byteSize: Int = 4096): ResponsePool {
         val urlBuilder = HttpUrl.parse(url)!!.newBuilder()
         val request = __head_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
 
-        responsePool.caller = Caller(execute(request, responsePool, isStream))
+        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize))
 
         return responsePool
     }
@@ -113,11 +113,11 @@ class Fetcher {
     fun put(url: String,
             params: HashMap<String, Any?> = hashMapOf(),
             headers: HashMap<String, Any?> = hashMapOf("User-Agent" to "Fetcher/" + BuildConfig.VERSION_NAME),
-            isStream: Boolean = false): ResponsePool {
+            isStream: Boolean = false, byteSize: Int = 4096): ResponsePool {
         val request = __put_request(url, params, headers)
         val responsePool = ResponsePool()
 
-        responsePool.caller = Caller(execute(request, responsePool, isStream))
+        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize))
 
         return responsePool
     }
@@ -144,7 +144,7 @@ class Fetcher {
     private fun execute(
         request: Request,
         responsePool: ResponsePool,
-        isStream: Boolean): Call {
+        isStream: Boolean, byteSize: Int): Call {
         val call = httpClient.newCall(request)
         thread {
             var waitingTime = 0
@@ -169,7 +169,7 @@ class Fetcher {
 
                 response.isSuccessful = serverResponse.isSuccessful
                 if (serverResponse.isSuccessful) {
-                    val buffer = ByteArray(8192)
+                    val buffer = ByteArray(byteSize)
                     if (isStream) {
                         while (true) {
                             val bytes = inputStream?.read(buffer)
