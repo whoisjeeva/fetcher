@@ -156,7 +156,6 @@ class Fetcher {
 
             try {
                 val serverResponse = call.execute()
-                val inputStream: InputStream? = if (isStream) serverResponse.body()?.byteStream() else null
                 val response = Response(
                     serverResponse.isRedirect,
                     serverResponse.code(),
@@ -169,9 +168,11 @@ class Fetcher {
 
                 response.isSuccessful = serverResponse.isSuccessful
                 if (serverResponse.isSuccessful) {
-                    val buffer = ByteArray(byteSize)
                     if (isStream) {
+                        var inputStream: InputStream? = null
                         try {
+                            inputStream = serverResponse.body()?.byteStream()
+                            val buffer = ByteArray(byteSize)
                             while (true) {
                                 val bytes = inputStream?.read(buffer)
                                 if (bytes == -1 || bytes == null) {
@@ -181,9 +182,10 @@ class Fetcher {
                                 onUiThread { responsePool.listener.ifStream?.invoke(buffer, bytes) }
                             }
                         } catch (e: Exception) {
-                            inputStream?.close()
                             responsePool.listener.ifException?.invoke(null)
                             responsePool.listener.ifFailedOrException?.invoke()
+                        } finally {
+                            inputStream?.close()
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
