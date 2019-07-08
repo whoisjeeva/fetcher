@@ -20,7 +20,7 @@ class ResponsePool {
         return this
     }
 
-    fun ifStream(callback: (ByteArray?) -> Unit): ResponsePool {
+    fun ifStream(callback: (buffer: ByteArray?, bytes: Int?) -> Unit): ResponsePool {
         listener.ifStream = callback
         return this
     }
