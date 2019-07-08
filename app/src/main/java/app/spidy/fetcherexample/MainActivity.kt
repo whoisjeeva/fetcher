@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import app.spidy.fetcher.Fetcher
+import app.spidy.universal.debug
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,10 +14,13 @@ class MainActivity : AppCompatActivity() {
 
         val fetcher = Fetcher()
 
-
-        fetcher.get("https://camo.githubusercontent.com/c1d74ecd1ddf3252ecfc5893ffaaef67ddde373d/68747470733a2f2f692e6962622e636f2f747042374471502f626c61636b2d6765726d616e2d73686570686572642d642d342e6a7067")
-            .ifSucceed {
-                Log.d("hello", it.toString())
-            }
+        val url = "https://sohowww.nascom.nasa.gov/gallery/Movies/animation/Solarwind_snd.mov"
+        fetcher.get(url, isStream = true, byteSize = 1024)
+                .ifFailedOrException {
+                    debug("hello", "FAILED.")
+                }
+                .ifStream { buffer, byteSize ->
+                    debug("hello", byteSize)
+                }
     }
 }
