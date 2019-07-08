@@ -174,10 +174,10 @@ class Fetcher {
                         while (true) {
                             val bytes = inputStream?.read(buffer)
                             if (bytes == -1 || bytes == null) {
-                                onUiThread { responsePool.listener.ifStream?.invoke(null) }
+                                onUiThread { responsePool.listener.ifStream?.invoke(null, null) }
                                 break
                             }
-                            onUiThread { responsePool.listener.ifStream?.invoke(buffer) }
+                            onUiThread { responsePool.listener.ifStream?.invoke(buffer, bytes) }
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
