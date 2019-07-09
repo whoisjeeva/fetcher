@@ -1,7 +1,6 @@
 package app.spidy.fetcher
 
 import app.spidy.fetcher.models.Response
-import app.spidy.fetcher.utils.onUiThread
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -169,6 +168,7 @@ class Fetcher {
                 response.isSuccessful = serverResponse.isSuccessful
                 if (serverResponse.isSuccessful) {
                     if (isStream) {
+                        responsePool.listener.ifSucceed?.invoke(response)
                         var inputStream: InputStream? = null
                         try {
                             inputStream = serverResponse.body()?.byteStream()
@@ -176,41 +176,36 @@ class Fetcher {
                             while (true) {
                                 val bytes = inputStream?.read(buffer)
                                 if (bytes == -1 || bytes == null) {
-                                    onUiThread { responsePool.listener.ifStream?.invoke(null, null) }
                                     break
                                 }
-                                onUiThread { responsePool.listener.ifStream?.invoke(buffer, bytes) }
+                                responsePool.listener.ifStream?.invoke(buffer, bytes)
                             }
                         } catch (e: Exception) {
                             responsePool.listener.ifException?.invoke(null)
                             responsePool.listener.ifFailedOrException?.invoke()
                         } finally {
                             inputStream?.close()
+                            responsePool.listener.ifStream?.invoke(null, -1)
                         }
                     } else {
                         response.content = serverResponse.body()?.bytes()
                         response.content?.also {
                             response.text = String(it)
                         }
+                        responsePool.listener.ifSucceed?.invoke(response)
                     }
-                    onUiThread { responsePool.listener.ifSucceed?.invoke(response) }
                 } else {
-                    onUiThread {
-                        responsePool.listener.ifFailed?.invoke(response)
-                        responsePool.listener.ifFailedOrException?.invoke()
-                    }
-                }
-            } catch (e: Exception) {
-                onUiThread {
-                    responsePool.listener.ifException?.invoke(e.message)
+                    responsePool.listener.ifFailed?.invoke(response)
                     responsePool.listener.ifFailedOrException?.invoke()
                 }
+            } catch (e: Exception) {
+                responsePool.listener.ifException?.invoke(e.message)
+                responsePool.listener.ifFailedOrException?.invoke()
             }
         }
 
         return call
     }
-
 
     inner class Classic {
         fun get(url: String,
