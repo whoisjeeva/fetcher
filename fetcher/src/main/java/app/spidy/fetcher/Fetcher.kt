@@ -69,7 +69,7 @@ class Fetcher {
         }
 
         val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
+                .setType(MultipartBody.FORM)
         val request = Request.Builder()
 
         for ((key, value) in params) {
@@ -91,7 +91,7 @@ class Fetcher {
         val request = __head_request(urlBuilder, params, headers)
         val responsePool = ResponsePool()
 
-        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize))
+        responsePool.caller = Caller(execute(request, responsePool, isStream, byteSize, true))
 
         return responsePool
     }
@@ -127,7 +127,7 @@ class Fetcher {
         }
 
         val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
+                .setType(MultipartBody.FORM)
         val request = Request.Builder()
 
         for ((key, value) in params) {
@@ -141,9 +141,9 @@ class Fetcher {
     }
 
     private fun execute(
-        request: Request,
-        responsePool: ResponsePool,
-        isStream: Boolean, byteSize: Int): Call {
+            request: Request,
+            responsePool: ResponsePool,
+            isStream: Boolean, byteSize: Int, isHead: Boolean = false): Call {
         val call = httpClient.newCall(request)
         thread {
             var waitingTime = 0
@@ -156,9 +156,9 @@ class Fetcher {
             try {
                 val serverResponse = call.execute()
                 val response = Response(
-                    serverResponse.isRedirect,
-                    serverResponse.code(),
-                    serverResponse.message()
+                        serverResponse.isRedirect,
+                        serverResponse.code(),
+                        serverResponse.message()
                 )
                 val serverHeaders = serverResponse.headers()
                 serverHeaders.names().forEach {
@@ -188,9 +188,11 @@ class Fetcher {
                             responsePool.listener.ifStream?.invoke(null, -1)
                         }
                     } else {
-                        response.content = serverResponse.body()?.bytes()
-                        response.content?.also {
-                            response.text = String(it)
+                        if (!isHead) {
+                            response.content = serverResponse.body()?.bytes()
+                            response.content?.also {
+                                response.text = String(it)
+                            }
                         }
                         responsePool.listener.ifSucceed?.invoke(response)
                     }
@@ -242,9 +244,9 @@ class Fetcher {
         private fun execute(request: Request): Response {
             val serverResponse = httpClient.newCall(request).execute()
             val response = Response(
-                serverResponse.isRedirect,
-                serverResponse.code(),
-                serverResponse.message()
+                    serverResponse.isRedirect,
+                    serverResponse.code(),
+                    serverResponse.message()
             )
             val serverHeaders = serverResponse.headers()
             serverHeaders.names().forEach {
