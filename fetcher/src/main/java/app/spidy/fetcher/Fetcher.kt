@@ -69,7 +69,7 @@ class Fetcher {
         }
 
         val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
+            .setType(MultipartBody.FORM)
         val request = Request.Builder()
 
         for ((key, value) in params) {
@@ -127,7 +127,7 @@ class Fetcher {
         }
 
         val requestBody = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
+            .setType(MultipartBody.FORM)
         val request = Request.Builder()
 
         for ((key, value) in params) {
@@ -141,9 +141,9 @@ class Fetcher {
     }
 
     private fun execute(
-            request: Request,
-            responsePool: ResponsePool,
-            isStream: Boolean, byteSize: Int, isHead: Boolean = false): Call {
+        request: Request,
+        responsePool: ResponsePool,
+        isStream: Boolean, byteSize: Int, isHead: Boolean = false): Call {
         val call = httpClient.newCall(request)
         thread {
             var waitingTime = 0
@@ -156,9 +156,9 @@ class Fetcher {
             try {
                 val serverResponse = call.execute()
                 val response = Response(
-                        serverResponse.isRedirect,
-                        serverResponse.code(),
-                        serverResponse.message()
+                    serverResponse.isRedirect,
+                    serverResponse.code(),
+                    serverResponse.message()
                 )
                 val serverHeaders = serverResponse.headers()
                 serverHeaders.names().forEach {
@@ -181,7 +181,7 @@ class Fetcher {
                                 responsePool.listener.ifStream?.invoke(buffer, bytes)
                             }
                         } catch (e: Exception) {
-                            responsePool.listener.ifException?.invoke(null)
+                            responsePool.listener.ifException?.invoke(e.message)
                             responsePool.listener.ifFailedOrException?.invoke()
                         } finally {
                             inputStream?.close()
@@ -230,7 +230,7 @@ class Fetcher {
             val urlBuilder = HttpUrl.parse(url)!!.newBuilder()
             val request = __head_request(urlBuilder, params, headers)
 
-            return execute(request)
+            return execute(request, true)
         }
 
 
@@ -241,12 +241,12 @@ class Fetcher {
         }
 
 
-        private fun execute(request: Request): Response {
+        private fun execute(request: Request, isHead: Boolean = false): Response {
             val serverResponse = httpClient.newCall(request).execute()
             val response = Response(
-                    serverResponse.isRedirect,
-                    serverResponse.code(),
-                    serverResponse.message()
+                serverResponse.isRedirect,
+                serverResponse.code(),
+                serverResponse.message()
             )
             val serverHeaders = serverResponse.headers()
             serverHeaders.names().forEach {
@@ -254,7 +254,7 @@ class Fetcher {
             }
 
             response.isSuccessful = serverResponse.isSuccessful
-            if (response.isSuccessful) {
+            if (response.isSuccessful && !isHead) {
                 response.content = serverResponse.body()?.bytes()
                 response.content?.also {
                     response.text = String(it)
